@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:QueuingCalculator.ViewModels"
+             xmlns:m="using:QueuingCalculator.Models"
+             x:Class="QueuingCalculator.Views.DistributionEditor"
+             x:DataType="vm:DistributionInputViewModel">
+
+    <Border Classes="section">
+        <StackPanel>
+            <TextBlock Classes="header" Text="{Binding Title}" />
+            <ComboBox ItemsSource="{Binding DistributionTypes}"
+                      SelectedItem="{Binding SelectedType}"
+                      IsEnabled="{Binding IsEditable}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="m:DistributionType">
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDisplay}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- Distribution parameters -->
+            <StackPanel IsEnabled="{Binding ParamsEditable}">
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="0,8,0,0"
+                      IsVisible="{Binding ShowUniformParams}">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="{Binding UniformALabel}" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Classes="numeric" Text="{Binding UniformAText}" />
+                    <TextBlock Grid.Row="0" Grid.Column="2" Classes="unit" Text="{Binding TimeUnitLabel}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="{Binding UniformBLabel}" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Classes="numeric" Text="{Binding UniformBText}" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Classes="unit" Text="{Binding TimeUnitLabel}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*" Margin="0,8,0,0" IsVisible="{Binding ShowGammaParams}">
+                    <TextBlock Grid.Column="0" Classes="label" Text="Shape (k)" />
+                    <TextBox Grid.Column="1" Classes="numeric" Text="{Binding GammaKText}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,8,0,0" IsVisible="{Binding ShowNormalParams}">
+                    <TextBlock Grid.Column="0" Classes="label" Text="Std deviation (σ)" />
+                    <TextBox Grid.Column="1" Classes="numeric" Text="{Binding NormalSigmaText}" />
+                    <TextBlock Grid.Column="2" Classes="unit" Text="{Binding TimeUnitLabel}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*" Margin="0,8,0,0" IsVisible="{Binding ShowWeibullParams}">
+                    <TextBlock Grid.Column="0" Classes="label" Text="Shape (k)" />
+                    <TextBox Grid.Column="1" Classes="numeric" Text="{Binding WeibullKText}" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Derived statistics: editable, typing in one overrides the distribution -->
+            <Border Classes="stats">
+                <StackPanel>
+                    <TextBlock Classes="subheader" Text="Statistics" Margin="0,0,0,4" />
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,2">
+                        <TextBlock Grid.Column="0" Classes="label" Text="{Binding MeanLabel}" />
+                        <TextBox Grid.Column="1" Classes="numeric" Text="{Binding MeanText}"
+                                 IsEnabled="{Binding IsMeanEditable}"
+                                 ToolTip.Tip="Mean time between arrivals / mean service time. Editing it sets the rate. For Uniform it is (a+b)/2." />
+                        <TextBlock Grid.Column="2" Classes="unit" Text="{Binding TimeUnitLabel}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" IsEnabled="{Binding IsEditable}">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="{Binding VarianceLabel}" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Classes="numeric" Text="{Binding VarianceText}" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Margin="12,0,12,0" Text="{Binding StdDevLabel}" />
+                        <TextBox Grid.Row="0" Grid.Column="3" Classes="numeric" Text="{Binding StdDevText}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="{Binding ScvLabel}" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Classes="numeric" Text="{Binding ScvText}" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Classes="label" Margin="12,0,12,0" Text="{Binding CvLabel}" />
+                        <TextBox Grid.Row="1" Grid.Column="3" Classes="numeric" Text="{Binding CvText}" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0" IsVisible="{Binding IsOverridden}">
+                        <TextBlock Grid.Column="0" Classes="overridden" TextWrapping="Wrap" VerticalAlignment="Center"
+                                   Text="✎ Overridden — distribution parameters are ignored." />
+                        <Button Grid.Column="1" Content="Reset" Command="{Binding ResetCommand}" Margin="8,0,0,0" />
+                    </Grid>
+                    <TextBlock Classes="hint" IsVisible="{Binding ParamsEditable}"
+                               Text="Type a known mean to set the rate, or a known σ², σ, C² or C to override the distribution." />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Classes="hint" Text="{Binding LockedHint}" IsVisible="{Binding ShowLockedHint}" />
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,66 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/arib/Uni/Modeling and Simulation/Single-Server Queuing Calculator/QueuingCalculator.Tests/QueuingCalculator.Tests.csproj": {}
+  },
+  "projects": {
+    "/home/arib/Uni/Modeling and Simulation/Single-Server Queuing Calculator/QueuingCalculator.Tests/QueuingCalculator.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/arib/Uni/Modeling and Simulation/Single-Server Queuing Calculator/QueuingCalculator.Tests/QueuingCalculator.Tests.csproj",
+        "projectName": "QueuingCalculator.Tests",
+        "projectPath": "/home/arib/Uni/Modeling and Simulation/Single-Server Queuing Calculator/QueuingCalculator.Tests/QueuingCalculator.Tests.csproj",
+        "packagesPath": "/home/arib/.nuget/packages/",
+        "outputPath": "/home/arib/Uni/Modeling and Simulation/Single-Server Queuing Calculator/QueuingCalculator.Tests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/arib/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/arib/.dotnet/sdk/8.0.425/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="using:QueuingCalculator.Converters"
+             x:Class="QueuingCalculator.App"
+             RequestedThemeVariant="Default">
+    <Application.Resources>
+        <conv:EnumDisplayConverter x:Key="EnumDisplay" />
+        <conv:NumberFormatConverter x:Key="Number" />
+    </Application.Resources>
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

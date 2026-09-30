@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Package-free console test runner: compiles the UI-independent layers (Models, Services, ViewModels) directly. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../QueuingCalculator/Models/**/*.cs" LinkBase="Models" />
+    <Compile Include="../QueuingCalculator/Services/**/*.cs" LinkBase="Services" />
+    <Compile Include="../QueuingCalculator/ViewModels/**/*.cs" LinkBase="ViewModels" />
+  </ItemGroup>
+</Project>

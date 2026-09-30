@@ -1,0 +1,219 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QueuingCalculator.ViewModels"
+        xmlns:m="using:QueuingCalculator.Models"
+        xmlns:views="using:QueuingCalculator.Views"
+        x:Class="QueuingCalculator.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Single-Server Queuing Calculator"
+        Width="960" Height="860" MinWidth="760" MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <Style Selector="Border.stats">
+            <Setter Property="Background" Value="#10808080" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+        </Style>
+        <Style Selector="TextBlock.subheader">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.overridden">
+            <Setter Property="Foreground" Value="#F9A825" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <!-- Avalonia has no GroupBox: a bordered panel with a bold header stands in for it. -->
+        <Style Selector="Border.section">
+            <Setter Property="BorderBrush" Value="#40808080" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,10,14,14" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+        <Style Selector="TextBlock.header">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style Selector="TextBlock.label">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+        </Style>
+        <Style Selector="TextBlock.hint">
+            <Setter Property="Opacity" Value="0.65" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+        <Style Selector="TextBlock.unit">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Opacity" Value="0.65" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+        </Style>
+        <Style Selector="TextBox.numeric">
+            <Setter Property="Margin" Value="0,3" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Grid.metrics > TextBlock">
+            <Setter Property="Margin" Value="0,7" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.symbol">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontFamily" Value="monospace" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="Border.banner">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+        <Style Selector="Border.banner.error">
+            <Setter Property="Background" Value="#26E53935" />
+            <Setter Property="BorderBrush" Value="#E53935" />
+        </Style>
+        <Style Selector="Border.banner.error TextBlock">
+            <Setter Property="Foreground" Value="#E53935" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Border.banner.warning">
+            <Setter Property="Background" Value="#26F9A825" />
+            <Setter Property="BorderBrush" Value="#F9A825" />
+        </Style>
+    </Window.Styles>
+
+    <Grid ColumnDefinitions="*,*" Margin="16">
+
+        <!-- ================= Left column: inputs ================= -->
+        <ScrollViewer Grid.Column="0" Margin="0,0,8,0">
+            <StackPanel>
+
+                <Border Classes="section">
+                    <StackPanel>
+                        <TextBlock Classes="header" Text="Model" />
+                        <ComboBox ItemsSource="{Binding ModelTypes}"
+                                  SelectedItem="{Binding SelectedModel}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="m:QueueModelType">
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplay}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="section">
+                    <StackPanel>
+                        <TextBlock Classes="header" Text="Parameters" />
+                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Arrival rate (λ)" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Classes="numeric" Text="{Binding LambdaText}" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Classes="unit" Text="{Binding RateUnitLabel}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Service rate (μ)" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Classes="numeric" Text="{Binding MuText}" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Classes="unit" Text="{Binding RateUnitLabel}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <views:DistributionEditor DataContext="{Binding Arrival}" />
+
+                <views:DistributionEditor DataContext="{Binding Service}" />
+
+                <Border Classes="banner warning" IsVisible="{Binding HasValidationMessage}">
+                    <TextBlock Text="{Binding ValidationMessage}" TextWrapping="Wrap" />
+                </Border>
+
+                <Button Content="Calculate"
+                        Command="{Binding CalculateCommand}"
+                        Classes="accent"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="0,10"
+                        IsDefault="True" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ================= Right column: outputs ================= -->
+        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+
+            <Border Classes="section">
+                <StackPanel>
+                    <TextBlock Classes="header" Text="Time Unit" />
+                    <StackPanel Orientation="Horizontal" Spacing="16">
+                        <RadioButton GroupName="TimeUnit" Content="Seconds" IsChecked="{Binding IsSeconds}" />
+                        <RadioButton GroupName="TimeUnit" Content="Minutes" IsChecked="{Binding IsMinutes}" />
+                        <RadioButton GroupName="TimeUnit" Content="Hours" IsChecked="{Binding IsHours}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="banner error" IsVisible="{Binding HasError}">
+                <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+            </Border>
+
+            <Border Classes="section">
+                <StackPanel>
+                    <TextBlock Classes="header" Text="Results" />
+                    <Grid Classes="metrics" ColumnDefinitions="Auto,*,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="symbol" Text="ρ" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Utilization (active)" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Classes="value" Text="{Binding Rho, Converter={StaticResource Number}}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="symbol" Text="ρ₀" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Idle proportion" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Classes="value" Text="{Binding Rho0, Converter={StaticResource Number}}" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="symbol" Text="Lq" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Avg number in queue" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" Classes="value" Text="{Binding Lq, Converter={StaticResource Number}}" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="symbol" Text="Wq" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Avg time in queue" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" Classes="value" Text="{Binding Wq, Converter={StaticResource Number}}" />
+                        <TextBlock Grid.Row="3" Grid.Column="3" Classes="unit" Text="{Binding TimeUnitLabel}" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="symbol" Text="W" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Avg time in system" />
+                        <TextBlock Grid.Row="4" Grid.Column="2" Classes="value" Text="{Binding W, Converter={StaticResource Number}}" />
+                        <TextBlock Grid.Row="4" Grid.Column="3" Classes="unit" Text="{Binding TimeUnitLabel}" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Classes="symbol" Text="L" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="5" Grid.Column="1" Text="Avg number in system" />
+                        <TextBlock Grid.Row="5" Grid.Column="2" Classes="value" Text="{Binding L, Converter={StaticResource Number}}" />
+
+                        <Separator Grid.Row="6" Grid.ColumnSpan="4" Margin="0,8" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Classes="symbol" Text="Cₐ²" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="7" Grid.Column="1" Text="Arrival SCV used" />
+                        <TextBlock Grid.Row="7" Grid.Column="2" Classes="value" Text="{Binding CaSquared, Converter={StaticResource Number}}" />
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Classes="symbol" Text="Cₛ²" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="8" Grid.Column="1" Text="Service SCV used" />
+                        <TextBlock Grid.Row="8" Grid.Column="2" Classes="value" Text="{Binding CsSquared, Converter={StaticResource Number}}" />
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Classes="symbol" Text="σₛ²" Margin="0,7,16,7" />
+                        <TextBlock Grid.Row="9" Grid.Column="1" Text="Service variance used" />
+                        <TextBlock Grid.Row="9" Grid.Column="2" Classes="value" Text="{Binding ServiceVariance, Converter={StaticResource Number}}" />
+                        <TextBlock Grid.Row="9" Grid.Column="3" Classes="unit" Text="{Binding TimeUnitLabel, StringFormat='{}{0}²'}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Classes="hint"
+                       Text="Rates are entered per selected time unit; W and Wq are reported in that same unit. ρ, ρ₀, L and Lq are unitless." />
+        </StackPanel>
+    </Grid>
+</Window>
